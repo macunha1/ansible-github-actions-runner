@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  role_name: github_actions_runner
+  author: Matheus Cunha
+  description: >
+    Idempotent Ansible role that installs and configures self-hosted GitHub
+    Actions Runners (yeah, plural!)
+  license: MIT
+  company: None
+  min_ansible_version: 2.2
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+        - buster
+    - name: EL
+      versions:
+        - 6
+        - 7
+        - 8
+    - name: Fedora
+      versions:
+        - 34
+        - 35
+    - name: Ubuntu
+      versions:
+        - xenial
+        - trusty
+        - bionic
+        - focal
+  galaxy_tags:
+    - github
+    - actions
+    - workflows
+    - runner

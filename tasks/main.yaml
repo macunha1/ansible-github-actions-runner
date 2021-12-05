@@ -17,6 +17,8 @@
     #
     # Therefore, each GitHub repository or organization URL will be hashed to
     # compose the GitHub Actions Runner path.
+    #
+    # yamllint disable-line rule:line-length
     gh_runner_path: "{{ gh_runner_installation_path }}/{{ gh_runner_version }}/{{ gh_runner_config_url | hash('sha256') }}"
 
   tags:

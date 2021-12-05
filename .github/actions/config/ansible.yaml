@@ -1,0 +1,6 @@
+---
+skip_list:
+  # YAML lint is executed apart from Ansible lint to support custom
+  # configurations
+  - yaml
+  - role-name

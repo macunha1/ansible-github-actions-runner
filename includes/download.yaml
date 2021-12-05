@@ -15,6 +15,7 @@
 - block:
     - name: GitHub Actions Runner | Download package
       get_url:
+        # yamllint disable-line rule:line-length
         url: "{{ gh_runner_download_base_url }}/v{{ gh_runner_version }}/actions-runner-{{ gh_runner_architecture }}-{{ gh_runner_version }}.tar.gz"
         dest: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
         mode: 0400

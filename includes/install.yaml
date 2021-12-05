@@ -1,6 +1,6 @@
 ---
 - name: GitHub Actions Runner | Install dependencies
-  shell:
+  command:
     cmd: "{{ gh_runner_path }}/bin/installdependencies.sh"
     chdir: "{{ gh_runner_path }}"
   become: true
@@ -36,7 +36,7 @@
   when: not is_this_host_registered.stat.exists
 
 - name: GitHub Actions Runner | Remove previous configuration before proceeding
-  shell:
+  command:
     cmd: >-
       {{ gh_runner_path }}/config.sh remove \
         --token {{ gh_runner_config_token }}
@@ -55,7 +55,7 @@
     - configure
 
 - name: GitHub Actions Runner | Configure Runner
-  shell:
+  command:
     cmd: >-
       {{ gh_runner_path }}/config.sh \
         --unattended --replace \
@@ -105,7 +105,7 @@
     - configure
 
 - name: GitHub Actions Runner | Install service
-  shell:
+  command:
     cmd: "{{ gh_runner_path }}/svc.sh install"
     chdir: "{{ gh_runner_path }}"
   become: true
@@ -113,10 +113,21 @@
   tags:
     - install
 
+- name: GitHub Actions Runner | Check service status
+  command:
+    cmd: "{{ gh_runner_path }}/svc.sh status"
+    chdir: "{{ gh_runner_path }}"
+  register: gh_runner_service_status
+  changed_when: false # never changes, this is just a read-only command
+  become: true
+  tags:
+    - configure
+
 - name: GitHub Actions Runner | Start service
-  shell:
+  command:
     cmd: "{{ gh_runner_path }}/svc.sh start"
     chdir: "{{ gh_runner_path }}"
+  when: not '"active (running)"' in gh_runner_service_status.stdout
   become: true
   tags:
     - configure
