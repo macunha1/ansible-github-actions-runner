@@ -1,0 +1,39 @@
+---
+- name: Variables | Check mandatory
+  assert:
+    that:
+      - gh_runner_config_url is defined
+      - gh_runner_config_token is defined
+
+- name: Variables | Set installation path
+  set_fact:
+    # Set a exclusive path for the GitHub Actions Runner in order to support
+    # multiple repository or organizations configured inside the same host.
+    #
+    # WHY? `config.sh` when registering the host will write some credentials and
+    # files to the path in order to identify the host, although inoffensive,
+    # this approach make it complicated to share the same host among multiple
+    # GitHub Actions Runners (even though it is possible).
+    #
+    # Therefore, each GitHub repository or organization URL will be hashed to
+    # compose the GitHub Actions Runner path.
+    gh_runner_path: "{{ gh_runner_installation_path }}/{{ gh_runner_version }}/{{ gh_runner_config_url | hash('sha256') }}"
+
+  tags:
+    - install
+    - configure
+    - uninstall
+
+- import_tasks: "../includes/download.yaml"
+  tags:
+    - install
+
+- import_tasks: "../includes/install.yaml"
+  tags:
+    - install
+    - configure
+
+- import_tasks: "../includes/uninstall.yaml"
+  when: gh_runner_remove_host
+  tags:
+    - uninstall

@@ -1,0 +1,56 @@
+---
+- name: GitHub Actions Runner | Create workspace
+  file:
+    path: "{{ gh_runner_workspace_path }}"
+    state: directory
+    mode: 0755
+  become: true
+
+- name: GitHub Actions Runner | Check if versions is already installed
+  stat:
+    path: "{{ gh_runner_path }}"
+  register: unarchived_package
+
+# Download the package only if it isn't found in the installed versions
+- block:
+    - name: GitHub Actions Runner | Download package
+      get_url:
+        url: "{{ gh_runner_download_base_url }}/v{{ gh_runner_version }}/actions-runner-{{ gh_runner_architecture }}-{{ gh_runner_version }}.tar.gz"
+        dest: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
+        mode: 0400
+        force: yes
+      become: true
+
+    - name: GitHub Actions Runner | Create installation directory
+      file:
+        path: "{{ gh_runner_path }}"
+        state: directory
+        mode: 0755
+      become: true
+
+    - name: GitHub Actions Runner | Unarchive package
+      unarchive:
+        src: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
+        dest: "{{ gh_runner_path }}"
+        remote_src: true
+      register: gh_runner_path_unarchived
+      become: true
+
+    - name: GitHub Actions Runner | Set permissions
+      file:
+        path: "{{ gh_runner_path }}"
+        owner: "{{ ansible_user_id }}"
+        mode: 0755
+        recurse: true
+      become: true
+
+    # Remove the package after extracting the content IF tmp_clear_download is
+    # enabled (default: true).
+    - name: GitHub Actions Runner | Remove archived package
+      file:
+        path: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
+        state: absent
+      become: true
+      when: tmp_clear_download
+
+  when: not unarchived_package.stat.exists

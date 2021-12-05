@@ -1,0 +1,49 @@
+---
+# Temporary path to download the GitHub Actions runner archive
+tmp_download_path: /tmp
+
+# Whether or not to clean the downloaded package in the temporary path after
+# unpacking/installing it.
+tmp_clear_download: true
+
+# Base URL to fetch the GitHub Actions Runner package with scripts that is used
+# to install and configure the host.
+gh_runner_download_base_url: https://github.com/actions/runner/releases/download
+
+# GitHub Actions runner version to download and install. Multiple parallel
+# versions are supported since every installation+configuration (either
+# repository or organization) has its own path.
+gh_runner_version: 2.285.0
+
+# GitHub Actions runner architecture, used together with the version to compose
+# the complete URL that is used to download the package.
+gh_runner_architecture: linux-x64
+
+# Path to unarchive the GitHub Actions runner package, this will be the prefix
+# with multiple versions inside. Allowing to share the same host with many
+# self-hosted runners regardless of the version.
+gh_runner_installation_path: /usr/local/share/github-actions-runner
+
+# GitHub Actions runner workspace, i.e. path used by job executions to checkout
+# the code, write files from the workflow, and etc.
+gh_runner_workspace_path: /var/cache/github-actions-runner
+
+# Whether or not to remove the GitHub Actions runner, enable to clean and
+# deregister the host. Enable this to remove the host from GitHub Actions and
+# complement with the --tag uninstall
+gh_runner_remove_host: false
+
+## Variables used to set parameters to the `config.sh` script.
+
+# (REQUIRED) GitHub Actions repository URL to register this self-hosted runner.
+# gh_runner_config_url: ""
+
+# (REQUIRED) GitHub Actions self-hosted Runner registration token, used to
+# authenticate the host to GitHub (either to a GitHub repository or to an GitHub
+# organization). Keep this value secure, e.g. using Ansible Vault.
+# Ref: https://docs.github.com/en/actions/hosting-your-own-runners/adding-self-hosted-runners
+# gh_runner_config_token: ""
+
+# Define the Github Actions Runner tags, this list will be converted to a
+# comma-separated string
+gh_runner_config_labels: ["self-hosted"]

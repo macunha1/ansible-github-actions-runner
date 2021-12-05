@@ -1,0 +1,23 @@
+---
+- name: GitHub Actions Runner [!!] DESTROY! | De-register Runner
+  shell:
+    cmd: >-
+      {{ gh_runner_path }}/config.sh \
+        remove --token "{{ gh_runner_config_token }}"
+    chdir: "{{ gh_runner_path }}"
+  become: true
+
+- name: GitHub Actions Runner [!!] DESTROY! | Stop service
+  shell:
+    cmd: "{{ gh_runner_path }}/svc.sh uninstall"
+    chdir: "{{ gh_runner_path }}"
+  become: true
+
+- name: GitHub Actions Runner [!!] DESTROY! | Delete workspace and installations
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "{{ gh_runner_installation_path }}/"
+    - "{{ gh_runner_workspace_path }}/"
+  become: true
