@@ -65,7 +65,7 @@
   command:
     cmd: |-
       {{ gh_runner_path }}/config.sh \
-        --unattended --replace \
+        --unattended --replace --disableupdate \
         --url {{ gh_runner_config_url }} \
         --token {{ gh_runner_config_token }} \
         --name {{ ansible_hostname }} \

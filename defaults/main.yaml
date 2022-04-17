@@ -13,7 +13,7 @@ gh_runner_download_base_url: https://github.com/actions/runner/releases/download
 # GitHub Actions runner version to download and install. Multiple parallel
 # versions are supported since every installation+configuration (either
 # repository or organization) has its own path.
-gh_runner_version: 2.285.0
+gh_runner_version: 2.290.1
 
 # GitHub Actions runner architecture, used together with the version to compose
 # the complete URL that is used to download the package.
