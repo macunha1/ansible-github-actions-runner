@@ -18,10 +18,10 @@
 #
 # ["Cannot configure the runner because it is already configured. To
 # reconfigure the runner, run 'config.cmd remove' or './config.sh remove' first."]
-- name: GitHub Actions Runner | Check if this host+URL was already registered
+- name: GitHub Actions Runner | Check if this host URL+token was already registered
   stat:
     path: "{{ gh_runner_path }}/hosts/{{ gh_runner_config_token | hash('sha256') }}"
-  register: is_this_host_registered
+  register: is_this_host_token_registered
   tags:
     - configure
 
@@ -31,23 +31,30 @@
   register: abandoned_credentials
 
   # Search only if the host is not registered, which is a clear indicator that
-  # any credentials inside that path are from previous executions, since the
-  # registration token is not matching any state file.
-  when: not is_this_host_registered.stat.exists
+  # any credentials inside that path are from previous executions or expired
+  # tokens, since the registration token hash is not matching any state file.
+  when: not is_this_host_token_registered.stat.exists
 
-- name: GitHub Actions Runner | Remove previous configuration before proceeding
-  command:
-    cmd: >-
-      {{ gh_runner_path }}/config.sh remove \
-        --token {{ gh_runner_config_token }}
-    chdir: "{{ gh_runner_path }}"
+# If abandoned credentials are found AND this host's CURRENT token is not registered, we
+# need to uninstall its service + remove it before proceeding, otherwise the
+# `config.sh` command to register the node will fail asking to remove it (which
+# we are proactively doing here).
+- block:
+    - name: GitHub Actions Runner | Uninstall previous service
+      command:
+        cmd: "{{ gh_runner_path }}/svc.sh uninstall"
+        chdir: "{{ gh_runner_path }}"
+      become: true
+
+    - name: GitHub Actions Runner | Remove previous configuration before proceeding
+      command:
+        cmd: |-
+          {{ gh_runner_path }}/config.sh remove \
+            --token {{ gh_runner_config_token }}
+        chdir: "{{ gh_runner_path }}"
 
   when:
-    # So, if abandoned credentials are found AND this host is not registered, we
-    # need to remove it before proceeding, otherwise the `config.sh` command to
-    # register the node will fail asking to remove it (which we are proactively
-    # doing here).
-    - not is_this_host_registered.stat.exists
+    - not is_this_host_token_registered.stat.exists
     - abandoned_credentials is defined
     - abandoned_credentials.stat.exists
 
@@ -56,7 +63,7 @@
 
 - name: GitHub Actions Runner | Configure Runner
   command:
-    cmd: >-
+    cmd: |-
       {{ gh_runner_path }}/config.sh \
         --unattended --replace \
         --url {{ gh_runner_config_url }} \
@@ -67,7 +74,7 @@
     chdir: "{{ gh_runner_path }}"
   register: config_host_command
 
-  when: not is_this_host_registered.stat.exists
+  when: not is_this_host_token_registered.stat.exists
   tags:
     - configure
 
@@ -90,8 +97,8 @@
     - configure
 
 # Create a state file to notify next Ansible executions that a given
-# registration token was already used. i.e. the is_this_host_registered variable
-# registered and used in the credential above.
+# registration token was already used. i.e. the is_this_host_token_registered
+# variable registered and used in the credential above.
 - name: GitHub Actions Runner | Create state file
   file:
     path: "{{ gh_runner_path }}/hosts/{{ gh_runner_config_token | hash('sha256') }}"
@@ -109,7 +116,7 @@
     cmd: "{{ gh_runner_path }}/svc.sh install"
     chdir: "{{ gh_runner_path }}"
   become: true
-  when: not is_this_host_registered.stat.exists
+  when: not is_this_host_token_registered.stat.exists
   tags:
     - install
 

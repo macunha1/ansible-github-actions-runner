@@ -35,7 +35,7 @@
     - install
     - configure
 
-- import_tasks: "../includes/uninstall.yaml"
+- include_tasks: "../includes/uninstall.yaml"
   when: gh_runner_remove_host
   tags:
     - uninstall
