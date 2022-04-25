@@ -1,7 +1,7 @@
 ---
 name: Continuous Integration
 
-on:
+"on": # Ref: https://github.com/adrienverge/yamllint/issues/430#issuecomment-1107440224
   push:
     branches: ["**"]
   pull_request:

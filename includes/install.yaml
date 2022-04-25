@@ -1,6 +1,6 @@
 ---
 - name: GitHub Actions Runner | Install dependencies
-  command:
+  ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/bin/installdependencies.sh"
     chdir: "{{ gh_runner_path }}"
   become: true
@@ -19,14 +19,14 @@
 # ["Cannot configure the runner because it is already configured. To
 # reconfigure the runner, run 'config.cmd remove' or './config.sh remove' first."]
 - name: GitHub Actions Runner | Check if this host URL+token was already registered
-  stat:
+  ansible.builtin.stat:
     path: "{{ gh_runner_path }}/hosts/{{ gh_runner_config_token | hash('sha256') }}"
   register: is_this_host_token_registered
   tags:
     - configure
 
 - name: GitHub Actions Runner | Search for abandoned credentials
-  stat:
+  ansible.builtin.stat:
     path: "{{ gh_runner_path }}/.credentials"
   register: abandoned_credentials
 
@@ -41,17 +41,19 @@
 # we are proactively doing here).
 - block:
     - name: GitHub Actions Runner | Uninstall previous service
-      command:
+      ansible.builtin.command:
         cmd: "{{ gh_runner_path }}/svc.sh uninstall"
         chdir: "{{ gh_runner_path }}"
+      changed_when: abandoned_credentials.stat.exists
       become: true
 
     - name: GitHub Actions Runner | Remove previous configuration before proceeding
-      command:
+      ansible.builtin.command:
         cmd: |-
           {{ gh_runner_path }}/config.sh remove \
             --token {{ gh_runner_config_token }}
         chdir: "{{ gh_runner_path }}"
+      changed_when: abandoned_credentials.stat.exists
 
   when:
     - not is_this_host_token_registered.stat.exists
@@ -62,7 +64,7 @@
     - configure
 
 - name: GitHub Actions Runner | Configure Runner
-  command:
+  ansible.builtin.command:
     cmd: |-
       {{ gh_runner_path }}/config.sh \
         --unattended --replace --disableupdate \
@@ -79,14 +81,14 @@
     - configure
 
 - name: GitHub Actions Runner | Check if path for state files exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ gh_runner_path }}/hosts"
   register: registered_hosts_path
   tags:
     - configure
 
 - name: GitHub Actions Runner | Create hosts directory
-  file:
+  ansible.builtin.file:
     path: "{{ gh_runner_path }}/hosts"
     state: directory
     owner: "{{ ansible_user_id }}"
@@ -100,7 +102,7 @@
 # registration token was already used. i.e. the is_this_host_token_registered
 # variable registered and used in the credential above.
 - name: GitHub Actions Runner | Create state file
-  file:
+  ansible.builtin.file:
     path: "{{ gh_runner_path }}/hosts/{{ gh_runner_config_token | hash('sha256') }}"
     state: touch
     mode: 0400
@@ -112,7 +114,7 @@
     - configure
 
 - name: GitHub Actions Runner | Install service
-  command:
+  ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh install"
     chdir: "{{ gh_runner_path }}"
   become: true
@@ -121,7 +123,7 @@
     - install
 
 - name: GitHub Actions Runner | Check service status
-  command:
+  ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh status"
     chdir: "{{ gh_runner_path }}"
   register: gh_runner_service_status
@@ -131,7 +133,7 @@
     - configure
 
 - name: GitHub Actions Runner | Start service
-  command:
+  ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh start"
     chdir: "{{ gh_runner_path }}"
   when: not '"active (running)"' in gh_runner_service_status.stdout
