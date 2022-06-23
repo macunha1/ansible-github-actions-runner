@@ -70,7 +70,7 @@
         --unattended --replace --disableupdate \
         --url {{ gh_runner_config_url }} \
         --token {{ gh_runner_config_token }} \
-        --name {{ gh_runner_name }} \
+        --name {{ gh_runner_config_name }} \
         --work {{ gh_runner_workspace_path }} \
         --labels {{ gh_runner_config_labels | join(',') }}
     chdir: "{{ gh_runner_path }}"

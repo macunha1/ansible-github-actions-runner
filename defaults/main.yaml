@@ -49,4 +49,4 @@ gh_runner_remove_host: false
 gh_runner_config_labels: ["self-hosted"]
 
 # Set the name to register the runner as in GitHub.
-gh_runner_name: "{{ ansible_hostname }}"
+gh_runner_config_name: "{{ ansible_hostname }}"
