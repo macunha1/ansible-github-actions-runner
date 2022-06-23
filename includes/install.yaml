@@ -76,10 +76,10 @@
         --labels {{ gh_runner_config_labels | join(',') }}
     chdir: "{{ gh_runner_path }}"
   register: config_host_command
-
   when: not is_this_host_token_registered.stat.exists
   tags:
     - configure
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: GitHub Actions Runner | Check if path for state files exists
   ansible.builtin.stat:
@@ -122,6 +122,7 @@
   when: not is_this_host_token_registered.stat.exists
   tags:
     - install
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: GitHub Actions Runner | Check service status
   ansible.builtin.command:
@@ -132,6 +133,7 @@
   become: true
   tags:
     - configure
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: GitHub Actions Runner | Start service
   ansible.builtin.command:
@@ -141,3 +143,4 @@
   become: true
   tags:
     - configure
+  ignore_errors: "{{ ansible_check_mode }}"
