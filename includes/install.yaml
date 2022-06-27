@@ -39,7 +39,8 @@
 # need to uninstall its service + remove it before proceeding, otherwise the
 # `config.sh` command to register the node will fail asking to remove it (which
 # we are proactively doing here).
-- block:
+- name: GitHub Actions Runner | Pro-activelly uninstall before re-installing
+  block:
     - name: GitHub Actions Runner | Uninstall previous service
       ansible.builtin.command:
         cmd: "{{ gh_runner_path }}/svc.sh uninstall"

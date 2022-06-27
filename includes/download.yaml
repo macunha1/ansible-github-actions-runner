@@ -13,8 +13,9 @@
   register: unarchived_package
 
 # Download the package only if it isn't found in the installed versions
-- block:
-    - name: GitHub Actions Runner | Download package
+- name: GitHub Actions Runner | Download package if not already done
+  block:
+    - name: GitHub Actions Runner | Downloading package {{ gh_runner_version }}
       ansible.builtin.get_url:
         # yamllint disable-line rule:line-length
         url: "{{ gh_runner_download_base_url }}/v{{ gh_runner_version }}/actions-runner-{{ gh_runner_architecture }}-{{ gh_runner_version }}.tar.gz"
