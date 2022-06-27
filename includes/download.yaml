@@ -2,6 +2,7 @@
 - name: GitHub Actions Runner | Create workspace
   ansible.builtin.file:
     path: "{{ gh_runner_workspace_path }}"
+    owner: "{{ ansible_user_id }}"
     state: directory
     mode: 0755
   become: true
