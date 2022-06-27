@@ -47,3 +47,6 @@ gh_runner_remove_host: false
 # Define the Github Actions Runner tags, this list will be converted to a
 # comma-separated string
 gh_runner_config_labels: ["self-hosted"]
+
+# Set the name to register the runner as in GitHub.
+gh_runner_config_name: "{{ ansible_hostname }}"
