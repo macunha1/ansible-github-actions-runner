@@ -116,7 +116,7 @@
 
 - name: GitHub Actions Runner | Install service
   ansible.builtin.command:
-    cmd: "{{ gh_runner_path }}/svc.sh install"
+    cmd: "{{ gh_runner_path }}/svc.sh install {{ gh_runner_service_user }}"
     chdir: "{{ gh_runner_path }}"
   become: true
   when: not is_this_host_token_registered.stat.exists

@@ -33,6 +33,9 @@ gh_runner_workspace_path: /var/cache/github-actions-runner
 # complement with the --tag uninstall
 gh_runner_remove_host: false
 
+# If set then the GitHub Actions service will be installed to run as this user.
+gh_runner_service_user: ""
+
 ## Variables used to set parameters to the `config.sh` script.
 
 # (REQUIRED) GitHub Actions repository URL to register this self-hosted runner.
