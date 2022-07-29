@@ -50,3 +50,6 @@ gh_runner_config_labels: ["self-hosted"]
 
 # Set the name to register the runner as in GitHub.
 gh_runner_config_name: "{{ ansible_hostname }}"
+
+# Set the runner group to add the runner to. If left blank, the default runner group will be used.
+gh_runner_config_runnergroup: ""

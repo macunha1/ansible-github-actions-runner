@@ -72,6 +72,7 @@
         --url {{ gh_runner_config_url }} \
         --token {{ gh_runner_config_token }} \
         --name {{ gh_runner_config_name }} \
+        --runnergroup "{{ gh_runner_config_runnergroup }}" \
         --work {{ gh_runner_workspace_path }} \
         --labels {{ gh_runner_config_labels | join(',') }}
     chdir: "{{ gh_runner_path }}"
