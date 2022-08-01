@@ -38,6 +38,7 @@
         remote_src: true
       register: gh_runner_path_unarchived
       become: true
+      ignore_errors: "{{ ansible_check_mode }}"
 
     - name: GitHub Actions Runner | Set permissions
       ansible.builtin.file:
