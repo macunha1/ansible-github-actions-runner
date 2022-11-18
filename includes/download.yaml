@@ -2,7 +2,7 @@
 - name: GitHub Actions Runner | Create workspace
   ansible.builtin.file:
     path: "{{ gh_runner_workspace_path }}"
-    owner: "{{ ansible_user_id }}"
+    owner: "{{ gh_runner_service_user }}"
     state: directory
     mode: 0755
   become: true
@@ -42,7 +42,7 @@
     - name: GitHub Actions Runner | Set permissions
       ansible.builtin.file:
         path: "{{ gh_runner_path }}"
-        owner: "{{ ansible_user_id }}"
+        owner: "{{ gh_runner_service_user }}"
         mode: 0755
         recurse: true
       become: true
