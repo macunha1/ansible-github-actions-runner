@@ -14,6 +14,7 @@
 
 # Download the package only if it isn't found in the installed versions
 - name: GitHub Actions Runner | Download package if not already done
+  when: not unarchived_package.stat.exists
   block:
     - name: GitHub Actions Runner | Downloading package {{ gh_runner_version }}
       ansible.builtin.get_url:
@@ -55,5 +56,3 @@
         state: absent
       become: true
       when: tmp_clear_download
-
-  when: not unarchived_package.stat.exists

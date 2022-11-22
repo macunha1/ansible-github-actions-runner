@@ -26,16 +26,19 @@
     - configure
     - uninstall
 
-- import_tasks: "../includes/download.yaml"
+- name: GitHub Actions Runner | Import Download tasks
+  ansible.builtin.import_tasks: "../includes/download.yaml"
   tags:
     - install
 
-- import_tasks: "../includes/install.yaml"
+- name: GitHub Actions Runner | Import Install tasks
+  ansible.builtin.import_tasks: "../includes/install.yaml"
   tags:
     - install
     - configure
 
-- include_tasks: "../includes/uninstall.yaml"
+- name: GitHub Actions Runner | Include Uninstall tasks
+  ansible.builtin.include_tasks: "../includes/uninstall.yaml"
   when: gh_runner_remove_host
   tags:
     - uninstall

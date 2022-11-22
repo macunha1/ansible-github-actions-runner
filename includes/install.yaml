@@ -40,6 +40,15 @@
 # `config.sh` command to register the node will fail asking to remove it (which
 # we are proactively doing here).
 - name: GitHub Actions Runner | Pro-activelly uninstall before re-installing
+
+  when:
+    - not is_this_host_token_registered.stat.exists
+    - abandoned_credentials is defined
+    - abandoned_credentials.stat.exists
+
+  tags:
+    - configure
+
   block:
     - name: GitHub Actions Runner | Uninstall previous service
       ansible.builtin.command:
@@ -57,14 +66,6 @@
             --token {{ gh_runner_config_token }}
         chdir: "{{ gh_runner_path }}"
       changed_when: abandoned_credentials.stat.exists
-
-  when:
-    - not is_this_host_token_registered.stat.exists
-    - abandoned_credentials is defined
-    - abandoned_credentials.stat.exists
-
-  tags:
-    - configure
 
 - name: GitHub Actions Runner | Configure Runner
   become: true
