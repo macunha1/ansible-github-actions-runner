@@ -60,6 +60,8 @@
     - name: GitHub Actions Runner | Remove previous configuration before proceeding
       become: true
       become_user: "{{ gh_runner_service_user }}"
+      environment:
+        RUNNER_ALLOW_RUNASROOT: "{{ gh_runner_allow_runasroot }}"
       ansible.builtin.command:
         cmd: |-
           {{ gh_runner_path }}/config.sh remove \
@@ -70,6 +72,8 @@
 - name: GitHub Actions Runner | Configure Runner
   become: true
   become_user: "{{ gh_runner_service_user }}"
+  environment:
+    RUNNER_ALLOW_RUNASROOT: "{{ gh_runner_allow_runasroot }}"
   ansible.builtin.command:
     cmd: |-
       {{ gh_runner_path }}/config.sh \
