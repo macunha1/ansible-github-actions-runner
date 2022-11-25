@@ -59,7 +59,7 @@
 
     - name: GitHub Actions Runner | Remove previous configuration before proceeding
       become: true
-      become_user: "{{ gh_runner_service_user }}"
+      become_user: "{{ gh_runner_installer_user }}"
       ansible.builtin.command:
         cmd: |-
           {{ gh_runner_path }}/config.sh remove \
@@ -69,7 +69,7 @@
 
 - name: GitHub Actions Runner | Configure Runner
   become: true
-  become_user: "{{ gh_runner_service_user }}"
+  become_user: "{{ gh_runner_installer_user }}"
   ansible.builtin.command:
     cmd: |-
       {{ gh_runner_path }}/config.sh \
@@ -98,7 +98,7 @@
   ansible.builtin.file:
     path: "{{ gh_runner_path }}/hosts"
     state: directory
-    owner: "{{ gh_runner_service_user }}"
+    owner: "{{ gh_runner_installer_user }}"
     mode: 0755
   become: true
   when: not registered_hosts_path.stat.exists

@@ -2,7 +2,7 @@
 - name: GitHub Actions Runner | Create workspace
   ansible.builtin.file:
     path: "{{ gh_runner_workspace_path }}"
-    owner: "{{ gh_runner_service_user }}"
+    owner: "{{ gh_runner_installer_user }}"
     state: directory
     mode: 0755
   become: true
@@ -40,14 +40,6 @@
       register: gh_runner_path_unarchived
       become: true
 
-    - name: GitHub Actions Runner | Set permissions
-      ansible.builtin.file:
-        path: "{{ gh_runner_path }}"
-        owner: "{{ gh_runner_service_user }}"
-        mode: 0755
-        recurse: true
-      become: true
-
     # Remove the package after extracting the content IF tmp_clear_download is
     # enabled (default: true).
     - name: GitHub Actions Runner | Remove archived package
@@ -56,3 +48,11 @@
         state: absent
       become: true
       when: tmp_clear_download
+
+- name: GitHub Actions Runner | Set permissions
+  ansible.builtin.file:
+    path: "{{ gh_runner_path }}"
+    owner: "{{ gh_runner_installer_user }}"
+    mode: 0755
+    recurse: true
+  become: true
