@@ -21,16 +21,6 @@
     # yamllint disable-line rule:line-length
     gh_runner_path: "{{ gh_runner_installation_path }}/{{ gh_runner_version }}/{{ gh_runner_config_url | hash('sha256') }}"
 
-- name: Variables | Set installer user (when root)
-  ansible.builtin.set_fact:
-    gh_runner_installer_user: "{{ ansible_user }}"
-  when: gh_runner_service_user == 'root'
-
-- name: Variables | Set installer user (when not root)
-  ansible.builtin.set_fact:
-    gh_runner_installer_user: "{{ gh_runner_service_user }}"
-  when: gh_runner_service_user != 'root'
-
   tags:
     - install
     - configure
