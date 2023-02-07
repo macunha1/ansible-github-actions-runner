@@ -9,6 +9,7 @@
     # which is indicated in this case by the `unarchive` task.
     - gh_runner_path_unarchived is defined
     - gh_runner_path_unarchived.changed
+    - ansible_os_family != 'Darwin'
   tags:
     - install
 
@@ -55,7 +56,7 @@
         cmd: "{{ gh_runner_path }}/svc.sh uninstall"
         chdir: "{{ gh_runner_path }}"
       changed_when: abandoned_credentials.stat.exists
-      become: true
+      become: "{{ ansible_os_family != 'Darwin' }}"
 
     - name: GitHub Actions Runner | Remove previous configuration before proceeding
       become: true
@@ -128,7 +129,7 @@
   ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh install {{ gh_runner_service_user }}"
     chdir: "{{ gh_runner_path }}"
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
   when: not is_this_host_token_registered.stat.exists
   tags:
     - install
@@ -139,7 +140,7 @@
     chdir: "{{ gh_runner_path }}"
   register: gh_runner_service_status
   changed_when: false # never changes, this is just a read-only command
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
   tags:
     - configure
 
@@ -148,6 +149,6 @@
     cmd: "{{ gh_runner_path }}/svc.sh start"
     chdir: "{{ gh_runner_path }}"
   when: not '"active (running)"' in gh_runner_service_status.stdout
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
   tags:
     - configure
