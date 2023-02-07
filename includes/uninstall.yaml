@@ -4,7 +4,7 @@
     cmd: "{{ gh_runner_path }}/svc.sh uninstall"
     chdir: "{{ gh_runner_path }}"
   changed_when: gh_runner_remove_host
-  become: true
+  become: "{{ ansible_os_family != 'Darwin' }}"
 
 - name: GitHub Actions Runner [!!] DESTROY! | De-register Runner
   ansible.builtin.command:
