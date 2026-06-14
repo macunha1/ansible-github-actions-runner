@@ -1,3 +1,11 @@
 # IDEs
 .idea/
 .vscode/
+
+# LLMs
+.claude/
+.codex-config/
+
+.cgcignore
+mempalace.yaml
+entities.json

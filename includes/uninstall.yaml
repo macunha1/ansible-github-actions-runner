@@ -1,12 +1,16 @@
 ---
 - name: GitHub Actions Runner [!!] DESTROY! | Uninstall service
+  become: "{{ ansible_os_family != 'Darwin' }}"
   ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh uninstall"
     chdir: "{{ gh_runner_path }}"
   changed_when: gh_runner_remove_host
-  become: "{{ ansible_os_family != 'Darwin' }}"
 
 - name: GitHub Actions Runner [!!] DESTROY! | De-register Runner
+  become: true
+  become_user: "{{ gh_runner_service_user }}"
+  environment:
+    RUNNER_ALLOW_RUNASROOT: "{{ gh_runner_allow_runasroot }}"
   ansible.builtin.command:
     cmd: |-
       {{ gh_runner_path }}/config.sh remove \
