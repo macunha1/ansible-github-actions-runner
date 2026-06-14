@@ -1,3 +1,5 @@
+.ansible/
+
 # IDEs
 .idea/
 .vscode/

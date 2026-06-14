@@ -3,6 +3,7 @@
   ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/bin/installdependencies.sh"
     chdir: "{{ gh_runner_path }}"
+  changed_when: true
   become: true
   when:
     # Only install dependencies if the installation directory contains changes,
@@ -87,6 +88,7 @@
         --labels {{ gh_runner_config_labels | join(',') }}
     chdir: "{{ gh_runner_path }}"
   register: config_host_command
+  changed_when: true
 
   when: not is_this_host_token_registered.stat.exists
   tags:
@@ -129,6 +131,7 @@
   ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh install {{ gh_runner_service_user }}"
     chdir: "{{ gh_runner_path }}"
+  changed_when: true
   become: "{{ ansible_os_family != 'Darwin' }}"
   when: not is_this_host_token_registered.stat.exists
   tags:
@@ -148,6 +151,7 @@
   ansible.builtin.command:
     cmd: "{{ gh_runner_path }}/svc.sh start"
     chdir: "{{ gh_runner_path }}"
+  changed_when: true
   when: not '"active (running)"' in gh_runner_service_status.stdout
   become: "{{ ansible_os_family != 'Darwin' }}"
   tags:
