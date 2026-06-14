@@ -10,6 +10,14 @@
     # Set a exclusive path for the GitHub Actions Runner in order to support
     # multiple repository or organizations configured inside the same host.
     #
+    # For multiple Organization runners on the same host, set a different
+    # `gh_runner_installation_path` per role invocation so each runner keeps
+    # its own installation directory and credentials.
+    #
+    # Opinionated: prefer smaller dedicated VMs instead of sharing one host.
+    # Separate machines keep runner environments segregated and reduce the
+    # chance of one org's runner state colliding with another.
+    #
     # WHY? `config.sh` when registering the host will write some credentials and
     # files to the path in order to identify the host, although inoffensive,
     # this approach make it complicated to share the same host among multiple

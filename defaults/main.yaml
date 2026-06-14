@@ -20,8 +20,17 @@ gh_runner_version: 2.290.1
 gh_runner_architecture: linux-x64
 
 # Path to unarchive the GitHub Actions runner package, this will be the prefix
-# with multiple versions inside. Allowing to share the same host with many
-# self-hosted runners regardless of the version.
+# with multiple versions inside.
+#
+# If you want to reuse the same host for multiple Organization runners, give
+# each runner its own `gh_runner_installation_path`. Otherwise the runner
+# registration can be overwritten when the same org is configured more than
+# once on the same machine.
+#
+# Opinionated: avoid this pattern when you can. Separate smaller VMs are the
+# preferred option because they keep environments isolated and make runner state
+# easier to reason about. Treat this as a workaround for when sharing a host is
+# unavoidable.
 gh_runner_installation_path: /usr/local/share/github-actions-runner
 
 # GitHub Actions runner workspace, i.e. path used by job executions to checkout

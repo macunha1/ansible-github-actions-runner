@@ -74,6 +74,58 @@ Note that despite using the same host, each one of these GitHub Actions Runner
 configuration will have its own path and credentials. Therefore, they can live
 well in harmony without killing each other.
 
+## Organization installs on one host
+
+When you reuse the same host for multiple runners in the same Organization, set
+`gh_runner_installation_path` to a unique folder for each role invocation.
+That keeps the runner registrations isolated and avoids one runner replacing
+another.
+
+This is a workaround, not the preferred setup. Smaller dedicated VMs are the
+better option when you can use them, because they keep environments segregated
+and make runner state easier to reason about.
+
+```yaml
+- hosts: github-runners-ubuntu
+  roles:
+    - role: macunha1.github_actions_runner
+      vars:
+        gh_runner_installation_path: /usr/local/share/github-actions-runner/acme/runner1
+        gh_runner_config_url: https://github.com/macunha-acme-corp
+        gh_runner_config_token: ACYWUR9MHGR9U58C34W9ZK00UNBF
+        gh_runner_config_name: acme-runner-1
+        gh_runner_config_labels:
+          - ubuntu22
+          - linux
+          - self-hosted
+
+    - role: macunha1.github_actions_runner
+      vars:
+        gh_runner_installation_path: /usr/local/share/github-actions-runner/acme/runner2
+        gh_runner_config_url: https://github.com/macunha-acme-corp
+        gh_runner_config_token: ACYWUR9MHGR9U58C34W9ZK00UNBF
+        gh_runner_config_name: acme-runner-2
+        gh_runner_config_labels:
+          - ubuntu22
+          - linux
+          - self-hosted
+
+    - role: macunha1.github_actions_runner
+      vars:
+        gh_runner_installation_path: /usr/local/share/github-actions-runner/acme/runner3
+        gh_runner_config_url: https://github.com/macunha-acme-corp
+        gh_runner_config_token: ACYWUR9MHGR9U58C34W9ZK00UNBF
+        gh_runner_config_name: acme-runner-3
+        gh_runner_config_labels:
+          - ubuntu22
+          - linux
+          - self-hosted
+```
+
+If you keep the same `gh_runner_installation_path` for all of them, the later
+registration can replace the earlier one on the same org. Separate directories
+avoid that overlap.
+
 ## Contribute
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
