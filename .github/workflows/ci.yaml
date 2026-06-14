@@ -43,9 +43,12 @@ jobs:
       - name: Galaxy | Import
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
+          # `ansible-galaxy role import` expects the GitHub repository name, not
+          # the Galaxy role name. This repo publishes as `github_actions_runner`
+          # on Galaxy, but the source repository is `ansible-github-actions-runner`.
           ansible-galaxy role import \
             --api-key ${ANSIBLE_GALAXY_API_KEY} \
             --branch master \
-            macunha1 github_actions_runner
+            macunha1 ansible-github-actions-runner
         env:
           ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}

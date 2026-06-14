@@ -1,11 +1,11 @@
 ---
 - name: GitHub Actions Runner | Create workspace
+  become: true
   ansible.builtin.file:
     path: "{{ gh_runner_workspace_path }}"
     owner: "{{ gh_runner_service_user }}"
     state: directory
     mode: 0755
-  become: true
 
 - name: GitHub Actions Runner | Check if versions is already installed
   ansible.builtin.stat:
@@ -17,42 +17,42 @@
   when: not unarchived_package.stat.exists
   block:
     - name: GitHub Actions Runner | Downloading package {{ gh_runner_version }}
+      become: true
       ansible.builtin.get_url:
         # yamllint disable-line rule:line-length
         url: "{{ gh_runner_download_base_url }}/v{{ gh_runner_version }}/actions-runner-{{ gh_runner_architecture }}-{{ gh_runner_version }}.tar.gz"
         dest: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
         mode: 0400
         force: yes
-      become: true
 
     - name: GitHub Actions Runner | Create installation directory
+      become: true
       ansible.builtin.file:
         path: "{{ gh_runner_path }}"
         state: directory
         mode: 0755
-      become: true
 
     - name: GitHub Actions Runner | Unarchive package
+      register: gh_runner_path_unarchived
+      become: true
       ansible.builtin.unarchive:
         src: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
         dest: "{{ gh_runner_path }}"
         remote_src: true
-      register: gh_runner_path_unarchived
-      become: true
 
     - name: GitHub Actions Runner | Set permissions
+      become: true
       ansible.builtin.file:
         path: "{{ gh_runner_path }}"
         owner: "{{ gh_runner_service_user }}"
         mode: 0755
         recurse: true
-      become: true
 
     # Remove the package after extracting the content IF tmp_clear_download is
     # enabled (default: true).
     - name: GitHub Actions Runner | Remove archived package
+      become: true
+      when: tmp_clear_download
       ansible.builtin.file:
         path: "{{ tmp_download_path }}/actions-runner-{{ gh_runner_version }}.tar.gz"
         state: absent
-      become: true
-      when: tmp_clear_download

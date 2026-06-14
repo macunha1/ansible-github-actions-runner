@@ -1,0 +1,51 @@
+---
+# The uninstall flow is shared by two callers:
+# - the explicit `uninstall` tag path, which should remove everything
+# - the pre-install cleanup path, which only needs to deregister the runner
+#
+# The shared variables below let the caller decide whether to treat the run as
+# a real removal or as a best-effort cleanup before reconfiguration.
+- name: GitHub Actions Runner [!!] DESTROY! | Uninstall service
+  # Same Linux-vs-Darwin service handling and limitations as the install tasks.
+  become: "{{ ansible_os_family != 'Darwin' }}"
+  ansible.builtin.command:
+    cmd: "{{ gh_runner_path }}/svc.sh uninstall"
+    chdir: "{{ gh_runner_path }}"
+  changed_when: gh_runner_uninstall_changed_when | default(gh_runner_remove_host)
+
+# `config.sh remove` is the important part of the teardown because it clears
+# the registration state at GitHub's side and inside the local installation.
+# Without this step, a later registration on the same host can collide with the
+# existing org/repository identity and fail.
+- name: GitHub Actions Runner [!!] DESTROY! | De-register Runner
+  become: true
+  become_user: "{{ gh_runner_service_user }}"
+  environment:
+    # The runner scripts refuse to run as root unless this variable is set, when
+    # running as root (which is a possible use-case).
+    RUNNER_ALLOW_RUNASROOT: "{{ gh_runner_allow_runasroot }}"
+  ansible.builtin.command:
+    cmd: |-
+      {{ gh_runner_path }}/config.sh remove \
+        --token "{{ gh_runner_config_token }}"
+    chdir: "{{ gh_runner_path }}"
+  changed_when: gh_runner_uninstall_changed_when | default(gh_runner_remove_host)
+
+# Only the full uninstall path should delete the installation tree and the
+# workspace. The install-time cleanup reuses the two steps above but keeps the
+# directories in place so the next configuration can continue using the same
+# shared path layout.
+- name: GitHub Actions Runner [!!] DESTROY! | Delete workspace and installations
+  become: true
+  ansible.builtin.file:
+    state: absent
+    path: "{{ item }}"
+
+  # Iterate and delete both [1] the installation prefix and [2]
+  # the workspace, leaving no runner residue on disk.
+  loop:
+    - "{{ gh_runner_installation_path }}/"
+    - "{{ gh_runner_workspace_path }}/"
+  when:
+    - gh_runner_uninstall_delete | default(gh_runner_remove_host)
+  changed_when: gh_runner_uninstall_changed_when | default(gh_runner_remove_host)
